@@ -6,6 +6,7 @@ let gitterAfstand = 20;
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
 
+
   //legemer.push(new Legeme(createVector(0, 0), 200, createVector(0, 0)))
 
   //legemer.push(new Legeme(createVector(200, 0), 20, createVector(0, 0)))
@@ -27,6 +28,13 @@ function setup() {
 }
 
 function draw() {
+
+  push();
+    (createButton("Reset Kamera").position(width-100, height-40)).mousePressed(()=>{
+    camera(0, 0, (height/2) / tan(PI/6), 0, 0, 0, 0, 1, 0)
+    });
+  pop();
+  
   background(0);
   orbitControl();
 
