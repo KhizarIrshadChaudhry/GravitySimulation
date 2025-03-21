@@ -1,5 +1,7 @@
 let legemer = []; // liste til alle legemer
 let G = 1; // Gravitationens konstant
+let gitterStr = 400;
+let gitterAfstand = 50;
 
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
@@ -18,8 +20,37 @@ function draw() {
   for (let legeme of legemer) {
     legeme.opdatere(legemer);
   }
-  
 
+  stroke(255);
+  noFill();
+  for (let x = -gitterStr; x < gitterStr; x += gitterAfstand) { //for-løkke til itterere x-positioner 
+    beginShape(); //start af vertexes
+      for (let y = -gitterStr; y < gitterStr; y += gitterAfstand) { //for-løkke til y-pos
+        let z = 0; //
+        for (let legeme of legemer) {
+          let d = dist(x, y, legeme.position.x, legeme.position.y);
+          z += -legeme.masse * 20 / (d + 10);
+        }
+        vertex(x, y, z);
+      }
+    endShape();
+  }
+  
+  // samme concept i den anden vej
+  for (let y = -gitterStr; y < gitterStr; y += gitterAfstand) {
+    beginShape();
+      for (let x = -gitterStr; x < gitterStr; x += gitterAfstand) {
+        let z = 0;
+        for (let legeme of legemer) {
+          let d = dist(x, y, legeme.position.x, legeme.position.y);
+          z += -legeme.masse * 20 / (d + 10);
+        }
+        vertex(x, y, z);
+      }
+    endShape();
+  }
+
+  
   
   // tegb legemerne
   noStroke();
