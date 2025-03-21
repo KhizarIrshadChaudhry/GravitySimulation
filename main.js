@@ -1,14 +1,18 @@
 let legemer = []; // liste til alle legemer
 let G = 1; // Gravitationens konstant
 let gitterStr = 400;
-let gitterAfstand = 50;
+let gitterAfstand = 20;
 
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
 
-  legemer.push(new Legeme(createVector(0, 0), 20, createVector(0, 0)))
+  //legemer.push(new Legeme(createVector(0, 0), 200, createVector(0, 0)))
 
-  legemer.push(new Legeme(createVector(200, 0), 20, createVector(0, 0)))
+  //legemer.push(new Legeme(createVector(200, 0), 20, createVector(0, 0)))
+
+  legemer.push(new Legeme(createVector(0, 0), 1000, createVector(0, 0), [255, 255, 0]));
+  legemer.push(new Legeme(createVector(-300, -300), 100, createVector(1, -1), [0, 255, 0]));
+  legemer.push(new Legeme(createVector(-270, -270), 1, createVector(2, -2), [255, 255, 255]));
 }
 
 function draw() {
@@ -84,7 +88,7 @@ class Legeme {
         let kraftRetning = p5.Vector.sub(andre.position, this.position);
         let afstandSq = kraftRetning.magSq(); // afstanden i anden
 
-        let kraftStr = (G * this.masse * andre.masse) / (afstandSq);
+        let kraftStr = (G * this.masse * andre.masse) / (afstandSq+100);
 
         kraftRetning.normalize();
         let kraft = p5.Vector.mult(kraftRetning, kraftStr);
