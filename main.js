@@ -6,7 +6,8 @@ let gitterAfstand = 20;
 let uiDiv;
 let posXLabel, posYLabel, velXLabel, velYLabel, masseLabel;
 let posXInput, posYInput, velXInput, velYInput, masseInput;
-let opretBtn;
+
+let visHastighedBox, visKraftBox;
 
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
@@ -56,10 +57,15 @@ function setup() {
   masseInput.parent(uiDiv);
   createElement('br').parent(uiDiv);
 
-  // Knap til at oprette nyt legeme
+  
 
+  // Knap til at oprette nyt legeme
   (createButton('Tilføj Legeme').parent(uiDiv)).mousePressed(tilføjLegeme);
 
+
+  //vektorpile
+  visHastighedBox = (createCheckbox('Vis hastigheds-vektor (grøn)', true).position(20, height-30)).style("color", "#00FF00");
+  visKraftBox = (createCheckbox('Vis kraft-vektor (rød)', true).position(20, height-50)).style("color", "#FF0000");
 
   (createButton("Reset Kamera").position(width-100, height-40)).mousePressed(()=>{
     camera(0, 0, (height/2) / tan(PI/6), 0, 0, 0, 0, 1, 0)
@@ -113,11 +119,24 @@ function draw() {
 
   // Tegn legemer
   noStroke();
-  for (let m of legemer) {
+  for (let legeme of legemer) {
     push();
-    fill(m.farve);
-    translate(m.position.x, m.position.y, 0);
+    fill(legeme.farve);
+    translate(legeme.position.x, legeme.position.y, 0);
     sphere(10);
+    
+    strokeWeight(3);
+    //linje for at vise hastighed og kraft retning
+    if (visHastighedBox.checked()) {
+      stroke(0, 255, 0);
+      
+      line(0, 0, 0, legeme.hastighed.x * 20, legeme.hastighed.y * 20, 0);
+    }
+
+    if (visKraftBox.checked()) {
+      stroke(255, 0, 0);
+      line(0, 0, 0, legeme.acceleration.x * 400, legeme.acceleration.y * 400, 0);
+    }
     pop();
   }
 }
