@@ -10,14 +10,26 @@ function setup() {
 
   //legemer.push(new Legeme(createVector(200, 0), 20, createVector(0, 0)))
 
-  legemer.push(new Legeme(createVector(0, 0), 1000, createVector(0, 0), [255, 255, 0]));
-  legemer.push(new Legeme(createVector(-300, -300), 100, createVector(1, -1), [0, 255, 0]));
-  legemer.push(new Legeme(createVector(-270, -270), 1, createVector(2, -2), [255, 255, 255]));
+  legemer.push(
+    new Legeme(createVector(0, 0), 1000, createVector(0, 0), [255, 255, 0])
+  );
+  legemer.push(
+    new Legeme(createVector(-300, -300), 100, createVector(1, -1), [0, 255, 0])
+  );
+  legemer.push(
+    new Legeme(
+      createVector(-270, -270),
+      1,
+      createVector(2, -2),
+      [255, 255, 255]
+    )
+  );
 }
 
 function draw() {
   background(0);
   orbitControl();
+
   rotateX(1);
 
   //opdatere hvert legeme
@@ -27,42 +39,42 @@ function draw() {
 
   stroke(255);
   noFill();
-  for (let x = -gitterStr; x < gitterStr; x += gitterAfstand) { //for-løkke til itterere x-positioner 
+  for (let x = -gitterStr; x < gitterStr; x += gitterAfstand) {
+    //for-løkke til itterere x-positioner
     beginShape(); //start af vertexes
-      for (let y = -gitterStr; y < gitterStr; y += gitterAfstand) { //for-løkke til y-pos
-        let z = 0; //
-        for (let legeme of legemer) {
-          let d = dist(x, y, legeme.position.x, legeme.position.y);
-          z += -legeme.masse * 20 / (d + 10);
-        }
-        vertex(x, y, z);
+    for (let y = -gitterStr; y < gitterStr; y += gitterAfstand) {
+      //for-løkke til y-pos
+      let z = 0; //
+      for (let legeme of legemer) {
+        let d = dist(x, y, legeme.position.x, legeme.position.y);
+        z += (-legeme.masse * 20) / (d + 10);
       }
-    endShape();
-  }
-  
-  // samme concept i den anden vej
-  for (let y = -gitterStr; y < gitterStr; y += gitterAfstand) {
-    beginShape();
-      for (let x = -gitterStr; x < gitterStr; x += gitterAfstand) {
-        let z = 0;
-        for (let legeme of legemer) {
-          let d = dist(x, y, legeme.position.x, legeme.position.y);
-          z += -legeme.masse * 20 / (d + 10);
-        }
-        vertex(x, y, z);
-      }
+      vertex(x, y, z);
+    }
     endShape();
   }
 
-  
-  
+  // samme concept i den anden vej
+  for (let y = -gitterStr; y < gitterStr; y += gitterAfstand) {
+    beginShape();
+    for (let x = -gitterStr; x < gitterStr; x += gitterAfstand) {
+      let z = 0;
+      for (let legeme of legemer) {
+        let d = dist(x, y, legeme.position.x, legeme.position.y);
+        z += (-legeme.masse * 20) / (d + 10);
+      }
+      vertex(x, y, z);
+    }
+    endShape();
+  }
+
   // tegb legemerne
   noStroke();
   for (let m of legemer) {
     push();
-      fill(m.farve);
-      translate(m.position.x, m.position.y, 0);
-      sphere(10);
+    fill(m.farve);
+    translate(m.position.x, m.position.y, 0);
+    sphere(10);
     pop();
   }
 }
@@ -77,18 +89,16 @@ class Legeme {
     this.farve = farve;
   }
 
-
   opdatere(alleLegemer) {
     let dt = 0.5; // tidsintervallet delta t
     this.acceleration = createVector(0, 0);
 
     for (let andre of alleLegemer) {
       if (this !== andre) {
-
         let kraftRetning = p5.Vector.sub(andre.position, this.position);
         let afstandSq = kraftRetning.magSq(); // afstanden i anden
 
-        let kraftStr = (G * this.masse * andre.masse) / (afstandSq+100);
+        let kraftStr = (G * this.masse * andre.masse) / (afstandSq + 100);
 
         kraftRetning.normalize();
         let kraft = p5.Vector.mult(kraftRetning, kraftStr);
