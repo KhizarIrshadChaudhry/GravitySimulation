@@ -1,82 +1,117 @@
-let legemer = []; // liste til alle legemer
-let G = 1; // Gravitationens konstant
-let gitterStr = 400;
+let legemer = [];
+let G = 1;
+let gitterStr = 250;
 let gitterAfstand = 20;
+
+let uiDiv;
+let posXLabel, posYLabel, velXLabel, velYLabel, masseLabel;
+let posXInput, posYInput, velXInput, velYInput, masseInput;
+let opretBtn;
 
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
 
+  // UI container 
+  uiDiv = createDiv();
+  uiDiv.position(20, 20);
+  uiDiv.style('color', '#fff'); 
 
-  //legemer.push(new Legeme(createVector(0, 0), 200, createVector(0, 0)))
+  // pos X
+  posXLabel = createSpan('Position X: ');
+  posXLabel.parent(uiDiv);
+  posXInput = createInput('0');
+  posXInput.size(50);
+  posXInput.parent(uiDiv);
+  createElement('br').parent(uiDiv);    
 
-  //legemer.push(new Legeme(createVector(200, 0), 20, createVector(0, 0)))
+  // pos Y
+  posYLabel = createSpan('Position Y: ');
+  posYLabel.parent(uiDiv);
+  posYInput = createInput('0');
+  posYInput.size(50);
+  posYInput.parent(uiDiv);
+  createElement('br').parent(uiDiv);
 
-  legemer.push(
-    new Legeme(createVector(0, 0), 1000, createVector(0, 0), [255, 255, 0])
-  );
-  legemer.push(
-    new Legeme(createVector(-300, -300), 100, createVector(1, -1), [0, 255, 0])
-  );
-  legemer.push(
-    new Legeme(
-      createVector(-270, -270),
-      1,
-      createVector(2, -2),
-      [255, 255, 255]
-    )
-  );
+  // hast X
+  velXLabel = createSpan('Hastighed X: ');
+  velXLabel.parent(uiDiv);
+  velXInput = createInput('0');
+  velXInput.size(50);
+  velXInput.parent(uiDiv);
+  createElement('br').parent(uiDiv);
+
+  // hast Y
+  velYLabel = createSpan('Hastighed Y: ');
+  velYLabel.parent(uiDiv);
+  velYInput = createInput('0');
+  velYInput.size(50);
+  velYInput.parent(uiDiv);
+  createElement('br').parent(uiDiv);
+
+  // Masse
+  masseLabel = createSpan('Masse: ');
+  masseLabel.parent(uiDiv);
+  masseInput = createInput('100');
+  masseInput.size(50);
+  masseInput.parent(uiDiv);
+  createElement('br').parent(uiDiv);
+
+  // Knap til at oprette nyt legeme
+
+  (createButton('Tilføj Legeme').parent(uiDiv)).mousePressed(tilføjLegeme);
+
+
+  (createButton("Reset Kamera").position(width-100, height-40)).mousePressed(()=>{
+    camera(0, 0, (height/2) / tan(PI/6), 0, 0, 0, 0, 1, 0)
+  }); //knap til at reset kamerat
+
+
+  legemer.push(new Legeme(createVector(0, 0), 1000, createVector(0, 0), [255, 255, 0]));
+  legemer.push(new Legeme(createVector(-300, -300), 100, createVector(1, -1), [0, 255, 0]));
+  legemer.push(new Legeme(createVector(-270, -270), 1, createVector(2, -2), [255, 255, 255]));
 }
 
 function draw() {
-
-  push();
-    (createButton("Reset Kamera").position(width-100, height-40)).mousePressed(()=>{
-    camera(0, 0, (height/2) / tan(PI/6), 0, 0, 0, 0, 1, 0)
-    });
-  pop();
-  
   background(0);
   orbitControl();
-
   rotateX(1);
 
-  //opdatere hvert legeme
+  // Opdater bevægelse for alle legemer
   for (let legeme of legemer) {
     legeme.opdatere(legemer);
   }
 
+  // Tegn grid med deformation
   stroke(255);
   noFill();
   for (let x = -gitterStr; x < gitterStr; x += gitterAfstand) {
-    //for-løkke til itterere x-positioner
-    beginShape(); //start af vertexes
-    for (let y = -gitterStr; y < gitterStr; y += gitterAfstand) {
-      //for-løkke til y-pos
-      let z = 0; //
-      for (let legeme of legemer) {
-        let d = dist(x, y, legeme.position.x, legeme.position.y);
-        z += (-legeme.masse * 20) / (d + 10);
+    beginShape();
+      for (let y = -gitterStr; y < gitterStr; y += gitterAfstand) {
+        let z = 0;
+        for (let legeme of legemer) {
+          let d = dist(x, y, legeme.position.x, legeme.position.y);
+          z += -legeme.masse * 20 / (d + 10);
+        }
+        vertex(x, y, z);
       }
-      vertex(x, y, z);
-    }
     endShape();
   }
 
-  // samme concept i den anden vej
+  // Tegn grid i den anden retning
   for (let y = -gitterStr; y < gitterStr; y += gitterAfstand) {
     beginShape();
-    for (let x = -gitterStr; x < gitterStr; x += gitterAfstand) {
-      let z = 0;
-      for (let legeme of legemer) {
-        let d = dist(x, y, legeme.position.x, legeme.position.y);
-        z += (-legeme.masse * 20) / (d + 10);
+      for (let x = -gitterStr; x < gitterStr; x += gitterAfstand) {
+        let z = 0;
+        for (let legeme of legemer) {
+          let d = dist(x, y, legeme.position.x, legeme.position.y);
+          z += -legeme.masse * 20 / (d + 10);
+        }
+        vertex(x, y, z);
       }
-      vertex(x, y, z);
-    }
     endShape();
   }
 
-  // tegb legemerne
+  // Tegn legemer
   noStroke();
   for (let m of legemer) {
     push();
@@ -87,8 +122,19 @@ function draw() {
   }
 }
 
+
+function tilføjLegeme() {
+  let x = parseFloat(posXInput.value());
+  let y = parseFloat(posYInput.value());
+  let vx = parseFloat(velXInput.value());
+  let vy = parseFloat(velYInput.value());
+  let masse = parseFloat(masseInput.value());
+
+  legemer.push(new Legeme(createVector(x, y), masse, createVector(vx, vy)));
+}
+
+// Klassen Legeme
 class Legeme {
-  // position og startHastighed er 2D-vektorer, og farve er en liste
   constructor(pos, masse, startHastighed, farve = [255, 0, 0]) {
     this.position = pos.copy();
     this.hastighed = startHastighed.copy();
@@ -98,24 +144,20 @@ class Legeme {
   }
 
   opdatere(alleLegemer) {
-    let dt = 0.5; // tidsintervallet delta t
-    this.acceleration = createVector(0, 0);
+    let dt = 0.5;
+    this.acceleration.set(0, 0);
 
     for (let andre of alleLegemer) {
-      if (this !== andre) {
+      if (andre !== this) {
         let kraftRetning = p5.Vector.sub(andre.position, this.position);
-        let afstandSq = kraftRetning.magSq(); // afstanden i anden
-
+        let afstandSq = kraftRetning.magSq();
         let kraftStr = (G * this.masse * andre.masse) / (afstandSq + 100);
-
         kraftRetning.normalize();
         let kraft = p5.Vector.mult(kraftRetning, kraftStr);
-        // Ifølge F = m * a  =>  a = F/m
         this.acceleration.add(p5.Vector.div(kraft, this.masse));
       }
     }
 
-    // Opdater  hastiguhen og position
     this.hastighed.add(p5.Vector.mult(this.acceleration, dt));
     this.position.add(p5.Vector.mult(this.hastighed, dt));
   }
