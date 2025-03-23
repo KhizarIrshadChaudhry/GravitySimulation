@@ -103,7 +103,7 @@ function draw() {
     endShape();
   }
 
-  // Tegn grid i den anden retning
+  // Tegn gitter i den anden retning
   for (let y = -gitterStr; y < gitterStr; y += gitterAfstand) {
     beginShape();
       for (let x = -gitterStr; x < gitterStr; x += gitterAfstand) {
@@ -124,6 +124,8 @@ function draw() {
     fill(legeme.farve);
     translate(legeme.position.x, legeme.position.y, 0);
     sphere(10);
+
+    
     
     strokeWeight(3);
     //linje for at vise hastighed og kraft retning
@@ -138,6 +140,8 @@ function draw() {
       line(0, 0, 0, legeme.acceleration.x * 400, legeme.acceleration.y * 400, 0);
     }
     pop();
+
+    
   }
 }
 
